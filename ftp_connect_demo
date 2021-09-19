@@ -1,0 +1,34 @@
+<?php
+        $ftp_server = "myip";
+        $ftp_user = "myuser";
+        $ftp_pass = "mypass";
+        $port = 50821;
+       
+        $depth = 10;
+        $conn_id = ftp_connect($ftp_server,$port) or die('Could not connect to FTP server.');
+        $login_result = ftp_login($conn_id, $ftp_user, $ftp_pass);
+        if (!$login_result) { die('Could not log in to FTP account.'); }
+        
+        $dir = array('.');
+        $a = count($dir);
+        $i = 0;
+        $b=0;
+        while (($a != $b) && ($i < $depth)) {
+            $i++;
+            $a = count($dir) ;
+            foreach ($dir as $d) {
+                $ftp_dir = $d.'/';
+                $newdir = ftp_nlist($conn_id, $ftp_dir);
+                dd($newdir);
+                foreach ($newdir as $key => $x) {
+                    if ((strpos($x,'.')) || (strpos($x,'.') === 0)) { unset($newdir[$key]); }
+                    elseif (!in_array($x,$dir)) { $dir[] = $x; }
+                }
+            }
+            $b = count($dir);
+        }
+        
+        print_r($dir);
+        
+        ftp_close($conn_id);
+        ?>
